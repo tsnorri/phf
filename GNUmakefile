@@ -51,6 +51,8 @@ else
 LIBPHF ?= libphf.so
 endif
 
+LIBPHF_STATIC ?= libphf.a
+
 .PHONY: config
 
 config:
@@ -70,6 +72,7 @@ config:
 	printf 'LOFLAGS ?= $(value LOFLAGS)'"\n" >> .config
 	printf 'LIBS ?= $(value LIBS)'"\n" >> .config
 	printf 'LIBPHF ?= $(value LIBPHF)'"\n" >> .config
+	printf 'LIBPHF_STATIC ?= $(value LIBPHF_STATIC)'"\n" >> .config
 	printf 'RM ?= $(value RM)'"\n" >> .config
 	printf 'RMDIR ?= $(value RMDIR)'"\n" >> .config
 	printf 'MKDIR ?= $(value MKDIR)'"\n" >> .config
@@ -82,6 +85,11 @@ phf: phf.cc phf.h
 
 $(LIBPHF): phf.cc phf.h
 	$(CXX) -o $@ $< $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(SOFLAGS) $(LIBS)
+
+$(LIBPHF_STATIC): phf.cc phf.h
+	$(CXX) -c -o phf.o $< $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(LIBS)
+	ar rcs $(LIBPHF_STATIC) phf.o
+	rm -f phf.o
 
 all: phf $(LIBPHF)
 
@@ -154,7 +162,7 @@ distclean: clean
 
 clean:
 	$(RM) -f phf
-	$(RM) -f $(LIBPHF)
+	$(RM) -f $(LIBPHF) $(LIBPHF_STATIC)
 	$(RM) -fr 5.?/
 	$(RM) -fr *.dSYM/
 
