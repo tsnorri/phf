@@ -176,35 +176,60 @@ namespace PHF {
 	template<typename key_t>
 	PHF_PUBLIC phf_hash_t hash(struct phf *, key_t);
 
+	template<typename key_t>
+	PHF_PUBLIC phf_hash_t hash(const struct phf *, key_t);
+
 	PHF_PUBLIC void destroy(struct phf *);
 }
 
-extern template size_t PHF::uniq<uint32_t>(uint32_t[], const size_t);
-extern template size_t PHF::uniq<uint64_t>(uint64_t[], const size_t);
+extern template size_t PHF::uniq<unsigned char>(unsigned char[], const size_t);
+extern template size_t PHF::uniq<unsigned short>(unsigned short[], const size_t);
+extern template size_t PHF::uniq<unsigned int>(unsigned int[], const size_t);
+extern template size_t PHF::uniq<unsigned long>(unsigned long[], const size_t);
+extern template size_t PHF::uniq<unsigned long long>(unsigned long long[], const size_t);
 extern template size_t PHF::uniq<phf_string_t>(phf_string_t[], const size_t);
 #if !PHF_NO_LIBCXX
 extern template size_t PHF::uniq<std::string>(std::string[], const size_t);
 #endif
 
-extern template phf_error_t PHF::init<uint32_t, true>(struct phf *, const uint32_t[], const size_t, const size_t, const size_t, const phf_seed_t);
-extern template phf_error_t PHF::init<uint64_t, true>(struct phf *, const uint64_t[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned char, true>(struct phf *, const unsigned char[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned short, true>(struct phf *, const unsigned short[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned int, true>(struct phf *, const unsigned int[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned long, true>(struct phf *, const unsigned long[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned long long, true>(struct phf *, const unsigned long long[], const size_t, const size_t, const size_t, const phf_seed_t);
 extern template phf_error_t PHF::init<phf_string_t, true>(struct phf *, const phf_string_t[], const size_t, const size_t, const size_t, const phf_seed_t);
 #if !PHF_NO_LIBCXX
 extern template phf_error_t PHF::init<std::string, true>(struct phf *, const std::string[], const size_t, const size_t, const size_t, const phf_seed_t);
 #endif
 
-extern template phf_error_t PHF::init<uint32_t, false>(struct phf *, const uint32_t[], const size_t, const size_t, const size_t, const phf_seed_t);
-extern template phf_error_t PHF::init<uint64_t, false>(struct phf *, const uint64_t[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned char, false>(struct phf *, const unsigned char[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned short, false>(struct phf *, const unsigned short[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned int, false>(struct phf *, const unsigned int[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned long, false>(struct phf *, const unsigned long[], const size_t, const size_t, const size_t, const phf_seed_t);
+extern template phf_error_t PHF::init<unsigned long long, false>(struct phf *, const unsigned long long[], const size_t, const size_t, const size_t, const phf_seed_t);
 extern template phf_error_t PHF::init<phf_string_t, false>(struct phf *, const phf_string_t[], const size_t, const size_t, const size_t, const phf_seed_t);
 #if !PHF_NO_LIBCXX
 extern template phf_error_t PHF::init<std::string, false>(struct phf *, const std::string[], const size_t, const size_t, const size_t, const phf_seed_t);
 #endif
 
-extern template phf_hash_t PHF::hash<uint32_t>(struct phf *, uint32_t);
-extern template phf_hash_t PHF::hash<uint64_t>(struct phf *, uint64_t);
+extern template phf_hash_t PHF::hash<unsigned char>(struct phf *, unsigned char);
+extern template phf_hash_t PHF::hash<unsigned short>(struct phf *, unsigned short);
+extern template phf_hash_t PHF::hash<unsigned int>(struct phf *, unsigned int);
+extern template phf_hash_t PHF::hash<unsigned long>(struct phf *, unsigned long);
+extern template phf_hash_t PHF::hash<unsigned long long>(struct phf *, unsigned long long);
 extern template phf_hash_t PHF::hash<phf_string_t>(struct phf *, phf_string_t);
 #if !PHF_NO_LIBCXX
 extern template phf_hash_t PHF::hash<std::string>(struct phf *, std::string);
+#endif
+
+extern template phf_hash_t PHF::hash<unsigned char>(const struct phf *, unsigned char);
+extern template phf_hash_t PHF::hash<unsigned short>(const struct phf *, unsigned short);
+extern template phf_hash_t PHF::hash<unsigned int>(const struct phf *, unsigned int);
+extern template phf_hash_t PHF::hash<unsigned long>(const struct phf *, unsigned long);
+extern template phf_hash_t PHF::hash<unsigned long long>(const struct phf *, unsigned long long);
+extern template phf_hash_t PHF::hash<phf_string_t>(const struct phf *, phf_string_t);
+#if !PHF_NO_LIBCXX
+extern template phf_hash_t PHF::hash<std::string>(const struct phf *, std::string);
 #endif
 
 #endif /* __cplusplus */

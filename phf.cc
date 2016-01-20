@@ -274,8 +274,11 @@ PHF_PUBLIC size_t PHF::uniq(key_t k[], const size_t n) {
 	return (n > 0)? j + 1 : 0;
 } /* PHF::uniq() */
 
-template size_t PHF::uniq<uint32_t>(uint32_t[], const size_t);
-template size_t PHF::uniq<uint64_t>(uint64_t[], const size_t);
+template size_t PHF::uniq<unsigned char>(unsigned char[], const size_t);
+template size_t PHF::uniq<unsigned short>(unsigned short[], const size_t);
+template size_t PHF::uniq<unsigned int>(unsigned int[], const size_t);
+template size_t PHF::uniq<unsigned long>(unsigned long[], const size_t);
+template size_t PHF::uniq<unsigned long long>(unsigned long long[], const size_t);
 template size_t PHF::uniq<phf_string_t>(phf_string_t[], const size_t);
 #if !PHF_NO_LIBCXX
 template size_t PHF::uniq<std::string>(std::string[], const size_t);
@@ -679,22 +682,28 @@ PHF_PUBLIC void PHF::compact(struct phf *phf) {
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-template int PHF::init<uint32_t, true>(struct phf *, const uint32_t[], const size_t, const size_t, const size_t, const phf_seed_t);
-template int PHF::init<uint64_t, true>(struct phf *, const uint64_t[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned char, true>(struct phf *, const unsigned char[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned short, true>(struct phf *, const unsigned short[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned int, true>(struct phf *, const unsigned int[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned long, true>(struct phf *, const unsigned long[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned long long, true>(struct phf *, const unsigned long long[], const size_t, const size_t, const size_t, const phf_seed_t);
 template int PHF::init<phf_string_t, true>(struct phf *, const phf_string_t[], const size_t, const size_t, const size_t, const phf_seed_t);
 #if !PHF_NO_LIBCXX
 template int PHF::init<std::string, true>(struct phf *, const std::string[], const size_t, const size_t, const size_t, const phf_seed_t);
 #endif
 
-template int PHF::init<uint32_t, false>(struct phf *, const uint32_t[], const size_t, const size_t, const size_t, const phf_seed_t);
-template int PHF::init<uint64_t, false>(struct phf *, const uint64_t[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned char, false>(struct phf *, const unsigned char[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned short, false>(struct phf *, const unsigned short[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned int, false>(struct phf *, const unsigned int[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned long, false>(struct phf *, const unsigned long[], const size_t, const size_t, const size_t, const phf_seed_t);
+template int PHF::init<unsigned long long, false>(struct phf *, const unsigned long long[], const size_t, const size_t, const size_t, const phf_seed_t);
 template int PHF::init<phf_string_t, false>(struct phf *, const phf_string_t[], const size_t, const size_t, const size_t, const phf_seed_t);
 #if !PHF_NO_LIBCXX
 template int PHF::init<std::string, false>(struct phf *, const std::string[], const size_t, const size_t, const size_t, const phf_seed_t);
 #endif
 
 template<bool nodiv, typename map_t, typename key_t>
-static inline phf_hash_t phf_hash_(map_t *g, key_t k, uint32_t seed, size_t r, size_t m) {
+static inline phf_hash_t phf_hash_(const map_t *g, key_t k, uint32_t seed, size_t r, size_t m) {
 	if (nodiv) {
 		uint32_t d = g[phf_g(k, seed) & (r - 1)];
 
@@ -707,7 +716,29 @@ static inline phf_hash_t phf_hash_(map_t *g, key_t k, uint32_t seed, size_t r, s
 } /* phf_hash_() */
 
 template<typename T>
+PHF_PUBLIC phf_hash_t PHF::hash(const struct phf *phf, T k) {
+	switch (phf->g_op) {
+	case phf::PHF_G_UINT8_MOD_R:
+		return phf_hash_<false>(reinterpret_cast<uint8_t *>(phf->g), k, phf->seed, phf->r, phf->m);
+	case phf::PHF_G_UINT8_BAND_R:
+		return phf_hash_<true>(reinterpret_cast<uint8_t *>(phf->g), k, phf->seed, phf->r, phf->m);
+	case phf::PHF_G_UINT16_MOD_R:
+		return phf_hash_<false>(reinterpret_cast<uint16_t *>(phf->g), k, phf->seed, phf->r, phf->m);
+	case phf::PHF_G_UINT16_BAND_R:
+		return phf_hash_<true>(reinterpret_cast<uint16_t *>(phf->g), k, phf->seed, phf->r, phf->m);
+	case phf::PHF_G_UINT32_MOD_R:
+		return phf_hash_<false>(reinterpret_cast<uint32_t *>(phf->g), k, phf->seed, phf->r, phf->m);
+	case phf::PHF_G_UINT32_BAND_R:
+		return phf_hash_<true>(reinterpret_cast<uint32_t *>(phf->g), k, phf->seed, phf->r, phf->m);
+	default:
+		abort();
+		return 0;
+	}
+} /* PHF::hash (const) */
+
+template<typename T>
 PHF_PUBLIC phf_hash_t PHF::hash(struct phf *phf, T k) {
+	// TODO: the const function could be written by making the jump table mutable, but would require refactoring.
 #if PHF_HAVE_COMPUTED_GOTOS && !PHF_NO_COMPUTED_GOTOS
 	static const void *const jmp[] = {
 		NULL,
@@ -731,31 +762,29 @@ PHF_PUBLIC phf_hash_t PHF::hash(struct phf *phf, T k) {
 	uint32_band_r:
 		return phf_hash_<true>(reinterpret_cast<uint32_t *>(phf->g), k, phf->seed, phf->r, phf->m);
 #else
-	switch (phf->g_op) {
-	case phf::PHF_G_UINT8_MOD_R:
-		return phf_hash_<false>(reinterpret_cast<uint8_t *>(phf->g), k, phf->seed, phf->r, phf->m);
-	case phf::PHF_G_UINT8_BAND_R:
-		return phf_hash_<true>(reinterpret_cast<uint8_t *>(phf->g), k, phf->seed, phf->r, phf->m);
-	case phf::PHF_G_UINT16_MOD_R:
-		return phf_hash_<false>(reinterpret_cast<uint16_t *>(phf->g), k, phf->seed, phf->r, phf->m);
-	case phf::PHF_G_UINT16_BAND_R:
-		return phf_hash_<true>(reinterpret_cast<uint16_t *>(phf->g), k, phf->seed, phf->r, phf->m);
-	case phf::PHF_G_UINT32_MOD_R:
-		return phf_hash_<false>(reinterpret_cast<uint32_t *>(phf->g), k, phf->seed, phf->r, phf->m);
-	case phf::PHF_G_UINT32_BAND_R:
-		return phf_hash_<true>(reinterpret_cast<uint32_t *>(phf->g), k, phf->seed, phf->r, phf->m);
-	default:
-		abort();
-		return 0;
-	}
+	const struct phf *cphf(phf);
+	return PHF::hash(cphf, k);
 #endif
 } /* PHF::hash() */
 
-template phf_hash_t PHF::hash<uint32_t>(struct phf *, uint32_t);
-template phf_hash_t PHF::hash<uint64_t>(struct phf *, uint64_t);
+template phf_hash_t PHF::hash<unsigned char>(struct phf *, unsigned char);
+template phf_hash_t PHF::hash<unsigned short>(struct phf *, unsigned short);
+template phf_hash_t PHF::hash<unsigned int>(struct phf *, unsigned int);
+template phf_hash_t PHF::hash<unsigned long>(struct phf *, unsigned long);
+template phf_hash_t PHF::hash<unsigned long long>(struct phf *, unsigned long long);
 template phf_hash_t PHF::hash<phf_string_t>(struct phf *, phf_string_t);
 #if !PHF_NO_LIBCXX
 template phf_hash_t PHF::hash<std::string>(struct phf *, std::string);
+#endif
+
+template phf_hash_t PHF::hash<unsigned char>(const struct phf *, unsigned char);
+template phf_hash_t PHF::hash<unsigned short>(const struct phf *, unsigned short);
+template phf_hash_t PHF::hash<unsigned int>(const struct phf *, unsigned int);
+template phf_hash_t PHF::hash<unsigned long>(const struct phf *, unsigned long);
+template phf_hash_t PHF::hash<unsigned long long>(const struct phf *, unsigned long long);
+template phf_hash_t PHF::hash<phf_string_t>(const struct phf *, phf_string_t);
+#if !PHF_NO_LIBCXX
+template phf_hash_t PHF::hash<std::string>(const struct phf *, std::string);
 #endif
 
 PHF_PUBLIC void PHF::destroy(struct phf *phf) {
