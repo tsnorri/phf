@@ -87,7 +87,7 @@ $(LIBPHF): phf.cc phf.h
 	$(CXX) -o $@ $< $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(SOFLAGS) $(LIBS)
 
 $(LIBPHF_STATIC): phf.cc phf.h
-	$(CXX) -c -o phf.o $< $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $(LIBS)
+	$(CXX) -c -o phf.o $< $(CXXFLAGS) $(CPPFLAGS) $(LIBS)
 	ar rcs $(LIBPHF_STATIC) phf.o
 	rm -f phf.o
 
